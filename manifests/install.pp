@@ -23,7 +23,8 @@ class python::install {
 
   $pythondev = $::osfamily ? {
     RedHat => "${python}-devel",
-    Debian => "${python}-dev"
+    Debian => "${python}-dev",
+    default => "${python}-devel"
   }
 
   $dev_ensure = $python::dev ? {
