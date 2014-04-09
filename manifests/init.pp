@@ -50,7 +50,7 @@ class python (
   # Module compatibility check
   $compatible = [ 'Debian', 'RedHat', 'SmartOS']
   if ! ($::osfamily in $compatible) {
-    fail("Module is not compatible with ${::operatingsystem}")
+    fail("Module is not compatible with ${::osfamily}")
   }
 
   Class['python::install'] -> Class['python::config']
