@@ -25,7 +25,7 @@ class python::install {
   }
 
   $pythonbase = $::osfamily ? {
-    'smartos' => 'py27',
+    Solaris => 'py27',
     default => "python${python::version}"
   }
 
