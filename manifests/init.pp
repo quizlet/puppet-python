@@ -48,7 +48,7 @@ class python (
 ) {
 
   # Module compatibility check
-  $compatible = [ 'Debian', 'RedHat', 'smartos']
+  $compatible = [ 'Debian', 'RedHat', 'SmartOS']
   if ! ($::osfamily in $compatible) {
     fail("Module is not compatible with ${::operatingsystem}")
   }
