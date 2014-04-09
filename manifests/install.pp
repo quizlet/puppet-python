@@ -18,7 +18,7 @@ class python::install {
   $python = $python::version ? {
     'system' => $operatingsystem ? {
       'smartos' => 'python27',
-      default => 'python';
+      default => 'python'
     },
     'pypy'   => 'pypy',
     default  => "python${python::version}",
