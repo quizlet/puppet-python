@@ -42,6 +42,7 @@ class python::install {
   }
 
   $pythonpip = "${pythonbase}-pip"
+  $pythonvirtualenv = "${pythonbase}-virtualenv"
 
   $pip_ensure = $python::pip ? {
     true    => present,
@@ -62,10 +63,10 @@ class python::install {
       package { "python==${python::version}": ensure => latest, provider => pip }
     }
     default: {
-      package { 'python-virtualenv': ensure => $venv_ensure }
-      package { $pythonpip: ensure => $pip_ensure }
-      package { $pythondev: ensure => $dev_ensure }
-      package { $python: ensure => present }
+      package { $pythonvirtualenv: ensure => $venv_ensure, alias => 'python-virtualenv' }
+      package { $pythonpip: ensure => $pip_ensure, alias => 'python-pip' }
+      package { $pythondev: ensure => $dev_ensure, alias => 'python-dev' }
+      package { $python: ensure => present, alias => 'python' }
     }
   }
 
