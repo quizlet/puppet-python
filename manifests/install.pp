@@ -16,18 +16,23 @@
 class python::install {
 
   $python = $python::version ? {
-    'system' => $operatingsystem ? {
-      'smartos' => 'python27',
+    'system' => $::osfamily ? {
+      Solaris => 'python27',
       default => 'python'
     },
     'pypy'   => 'pypy',
     default  => "python${python::version}",
   }
 
+  $pythonbase = $::osfamily ? {
+    'smartos' => 'py27',
+    default => "python${python::version}"
+  }
+
   $pythondev = $::osfamily ? {
     RedHat => "${python}-devel",
     Debian => "${python}-dev",
-    smartos => "py27-py",
+    Solaris => "${pythonbase}-py",
     default => "${python}-devel"
   }
 
@@ -35,6 +40,8 @@ class python::install {
     true    => present,
     default => absent,
   }
+
+  $pythonpip = "${pythonbase}-pip"
 
   $pip_ensure = $python::pip ? {
     true    => present,
@@ -56,7 +63,7 @@ class python::install {
     }
     default: {
       package { 'python-virtualenv': ensure => $venv_ensure }
-      package { 'python-pip': ensure => $pip_ensure }
+      package { $pythonpip: ensure => $pip_ensure }
       package { $pythondev: ensure => $dev_ensure }
       package { $python: ensure => present }
     }
