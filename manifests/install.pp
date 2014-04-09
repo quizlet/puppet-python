@@ -75,7 +75,7 @@ class python::install {
       true    => present,
       default => absent,
     }
-    package { 'gunicorn': ensure => $gunicorn_ensure }
+    package { 'gunicorn': ensure => $gunicorn_ensure, provider => pip }
   }
 
 }
