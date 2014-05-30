@@ -17,7 +17,7 @@ class python::install {
 
   $python = $python::version ? {
     'system' => $::osfamily ? {
-      Solaris => 'python27',
+      'Solaris' => 'python27',
       default => 'python'
     },
     'pypy'   => 'pypy',
@@ -25,14 +25,14 @@ class python::install {
   }
 
   $pythonbase = $::osfamily ? {
-    Solaris => 'py27',
+    'Solaris' => 'py27',
     default => "${python}"
   }
 
   $pythondev = $::osfamily ? {
-    RedHat => "${python}-devel",
-    Debian => "${python}-dev",
-    Solaris => "${pythonbase}-py",
+    'RedHat' => "${python}-devel",
+    'Debian' => "${python}-dev",
+    'Solaris' => "${pythonbase}-py",
     default => "${python}-devel"
   }
 
