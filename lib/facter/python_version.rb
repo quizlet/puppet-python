@@ -1,40 +1,33 @@
 # Make python versions available as facts
-# In lists default python and system python versions
-require 'puppet'
-pkg = Puppet::Type.type(:package).new(:name => "python")
 
-Facter.add("system_python_version") do
-  setcode do
-    begin
-      unless [:absent,'purged'].include?(pkg.retrieve[pkg.property(:ensure)])
-          /^(\d+\.\d+\.\d+).*$/.match(pkg.retrieve[pkg.property(:ensure)])[1]
-      end
-    rescue
-      false
+def get_python_version(executable)
+  if Facter::Util::Resolution.which(executable)
+    results = Facter::Util::Resolution.exec("#{executable} -V 2>&1").match(/^.*(\d+\.\d+\.\d+)$/)
+    if results
+      results[1]
     end
   end
 end
 
 Facter.add("python_version") do
-  has_weight 100
   setcode do
-    begin
-      /^.*(\d+\.\d+\.\d+)$/.match(Facter::Util::Resolution.exec('python -V 2>&1'))[1]
-    rescue
-      false
+    get_python_version 'python'
+  end
+end
+
+Facter.add("python2_version") do
+  setcode do
+    default_version = get_python_version 'python'
+    if default_version.nil? or !default_version.start_with?('2')
+      get_python_version 'python2'
+    else
+      default_version
     end
   end
 end
 
-Facter.add("python_version") do
-  has_weight 50
+Facter.add("python3_version") do
   setcode do
-    begin
-      unless [:absent,'purged'].include?(pkg.retrieve[pkg.property(:ensure)])
-          /^.*(\d+\.\d+\.\d+).*$/.match(pkg.retrieve[pkg.property(:ensure)])[1]
-      end
-    rescue
-      false
-    end
+    get_python_version 'python3'
   end
 end

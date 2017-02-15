@@ -1,81 +1,47 @@
-# == Define: python::install
+# This class installs core python packages.  This should only be used by
+# including the 'python' class.
 #
-# Installs core python packages
+# @example
+#   include python::install
 #
-# === Examples
-#
-# include python::install
-#
-# === Authors
-#
-# Sergey Stankevich
-# Ashley Penney
-# Fotis Gimian
-#
-
 class python::install {
 
-  $python = $python::version ? {
-    'system' => $::osfamily ? {
-      'Solaris' => 'python27',
-      default => 'python'
-    },
-    'pypy'   => 'pypy',
-    default  => "python${python::version}",
-  }
+  $python_name = python::python_name()
 
-  $pythonbase = $::osfamily ? {
-    'Solaris' => 'py27',
-    default => "${python}"
-  }
-
-  $pythondev = $::osfamily ? {
-    'RedHat' => "${python}-devel",
-    'Debian' => "${python}-dev",
-    'Solaris' => "${pythonbase}-py",
-    default => "${python}-devel"
-  }
-
+  $python_dev = python::dev_name()
   $dev_ensure = $python::dev ? {
     true    => present,
     default => absent,
   }
-
-  $pythonpip = "${pythonbase}-pip"
-  $pythonvirtualenv = "${pythonbase}-virtualenv"
 
   $pip_ensure = $python::pip ? {
     true    => present,
     default => absent,
   }
 
-  $venv_ensure = $python::virtualenv ? {
+  $virtualenv_ensure = $python::virtualenv ? {
     true    => present,
     default => absent,
   }
 
-  # Install latest from pip if pip is the provider
-  case $python::provider {
-    pip: {
-      package { 'virtualenv': ensure => latest, provider => pip }
-      package { 'pip': ensure => latest, provider => pip }
-      package { $pythondev: ensure => latest }
-      package { "python==${python::version}": ensure => latest, provider => pip }
+  if $python_dev {
+    package { $python_dev: ensure => $dev_ensure }
+  }
+
+  if $python::use_epel == true {
+    include 'epel'
+    Class['epel'] -> Package[$python_name]
+  }
+
+  python::ensure_pip($pip_ensure)
+  python::ensure_virtualenv($virtualenv_ensure)
+
+  case $facts['kernel'] {
+    'OpenBSD': {
+      package { $python_name: ensure => $::python::version }
     }
     default: {
-      package { $pythonvirtualenv: ensure => $venv_ensure, alias => 'python-virtualenv' }
-      package { $pythonpip: ensure => $pip_ensure, alias => 'python-pip' }
-      package { $pythondev: ensure => $dev_ensure, alias => 'python-dev' }
-      package { $python: ensure => present, alias => 'python' }
+      package { $python_name: ensure => present }
     }
   }
-
-  if $python::manage_gunicorn {
-    $gunicorn_ensure = $python::gunicorn ? {
-      true    => present,
-      default => absent,
-    }
-    package { 'gunicorn': ensure => $gunicorn_ensure, provider => pip }
-  }
-
 }

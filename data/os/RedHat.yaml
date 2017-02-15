@@ -1,0 +1,5 @@
+---
+python::version: '3'
+python::valid_versions:
+  - '3'
+python::use_epel: true
