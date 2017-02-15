@@ -62,7 +62,7 @@
 define python::virtualenv (
   String $ensure         = present,
   String $version        = 'system',
-  Boolean $requirements  = false,
+  $requirements          = false,
   Boolean $systempkgs    = false,
   String $venv_dir       = $name,
   Boolean $distribute    = true,
