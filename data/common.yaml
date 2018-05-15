@@ -1,0 +1,5 @@
+---
+python::version: 'system'
+python::pip: true
+python::dev: false
+python::virtualenv: false

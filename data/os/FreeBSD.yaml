@@ -1,0 +1,10 @@
+---
+python::version: '3'
+python::valid_versions:
+  - '2'
+  - '27'
+  - '3'
+  - '32'
+  - '33'
+  - '34'
+  - '35'
