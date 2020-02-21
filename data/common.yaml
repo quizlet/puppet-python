@@ -3,3 +3,9 @@ python::version: 'system'
 python::pip: true
 python::dev: false
 python::virtualenv: false
+
+python::version_defaults:
+  virtualenv_package: 'virtualenv'
+  virtualenv_cmd: 'virtualenv'
+  pip_package: 'pip'
+  pip_cmd: 'pip'

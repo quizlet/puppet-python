@@ -8,3 +8,49 @@ python::valid_versions:
   - '33'
   - '34'
   - '35'
+  - '36'
+  - '37'
+
+python::version_data:
+  '37':
+    virtualenv_package: 'py37-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.7'
+    pip_package: 'py37-pip'
+    pip_cmd: 'pip-3.7'
+  '36':
+    virtualenv_package: 'py36-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.6'
+    pip_package: 'py36-pip'
+    pip_cmd: 'pip-3.6'
+  '35':
+    virtualenv_package: 'py35-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.5'
+    pip_package: 'py35-pip'
+    pip_cmd: 'pip-3.5'
+  '34':
+    virtualenv_package: 'py34-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.4'
+    pip_package: 'py34-pip'
+    pip_cmd: 'pip-3.4'
+  '33':
+    virtualenv_package: 'py33-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.3'
+    pip_package: 'py33-pip'
+    pip_cmd: 'pip-3.3'
+  '32':
+    virtualenv_package: 'py32-virtualenv'
+    virtualenv_cmd: 'virtualenv-3.2'
+    pip_package: 'py32-pip'
+    pip_cmd: 'pip-3.2'
+  '27': &defaults
+    virtualenv_package: 'py27-virtualenv'
+    virtualenv_cmd: 'virtualenv-2.7'
+    pip_package: 'py27-pip'
+    pip_cmd: 'pip-2.7'
+  'system':
+    virtualenv_package: 'py27-virtualenv'
+    virtualenv_cmd: 'virtualenv-2.7'
+    pip_package: 'py27-pip'
+    pip_cmd: 'pip-2.7'
+
+python::version_defaults: *defaults

@@ -99,7 +99,6 @@ define python::requirements (
       mode    => '0644',
       owner   => $owner_real,
       group   => $group_real,
-      audit   => content,
       replace => false,
       content => '# Puppet will install and/or update pip packages listed here',
     }

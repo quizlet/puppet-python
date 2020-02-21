@@ -4,3 +4,15 @@ python::valid_versions:
   - '3'
   - '3.4'
   - '2.7'
+
+python::version_data:
+  '3':
+    virtualenv_package: 'python3-virtualenv'
+    pip_package: 'python3-pip'
+  '3.4':
+    virtualenv_package: 'python3-virtualenv'
+    pip_package: 'python3-pip'
+  '2.7':
+    virtualenv_package: 'python-virtualenv'
+    pip_package: 'python-pip'
+

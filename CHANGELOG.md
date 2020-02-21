@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 2017-01-08 2.7.0
+- Update default data references for FreeBSD
+
+## 2017-01-08 2.5.0
+ - Drop distribute support now that its been merged into setuptools
+ - Add initial support for Archlinux
+
+## 2017-01-07 2.4.3
+ - Update data for virtualenv information per platform
+ - Add tests for virtulaenv define
+
 ## 2016-09-04 2.4.2
  - Fixes for OpenBSD package names
 

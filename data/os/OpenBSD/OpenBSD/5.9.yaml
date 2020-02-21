@@ -3,3 +3,16 @@ python::version: '3.4.4'
 python::valid_versions:
   - '2.7.11'
   - '3.4.4'
+
+python::version_data:
+  '3.4.4':
+    virtualenv_package: 'py3-virtualenv'
+    virtualenv_cmd: 'virtualenv-3'
+    pip_package: 'py3-pip'
+    pip_cmd: 'pip3.4'
+  '2.7.11':
+    virtualenv_package: 'py-virtualenv'
+    virtualenv_cmd: 'virtualenv'
+    pip_package: 'py-pip'
+    pip_cmd: 'pip2.7'
+

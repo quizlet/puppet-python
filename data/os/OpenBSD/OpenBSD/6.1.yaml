@@ -1,24 +1,31 @@
 ---
-python::version: '3.5.2'
+python::version: '3.6.0p0'
 python::valid_versions:
-  - '2.7.12'
-  - '3.4.5'
-  - '3.5.2'
+  - '2.7.13p0'
+  - '3.4.5p2'
+  - '3.5.2p2'
+  - '3.6.0p0'
 
 python::version_data:
-  '3.5.2':
+  '3.6.0p0':
+    virtualenv_package: 'py3-virtualenv'
+    virtualenv_cmd: 'virtualenv-3'
+    pip_package: 'py3-pip'
+    pip_cmd: 'pip3.6'
+  '3.5.202':
     virtualenv_package: 'py3-virtualenv'
     virtualenv_cmd: 'virtualenv-3'
     pip_package: 'py3-pip'
     pip_cmd: 'pip3.5'
-  '3.4.5':
+  '3.4.5p2':
     virtualenv_package: 'py3-virtualenv'
     virtualenv_cmd: 'virtualenv-3'
     pip_package: 'py3-pip'
     pip_cmd: 'pip3.4'
-  '2.7.12':
+  '2.7.13p0':
     virtualenv_package: 'py-virtualenv'
     virtualenv_cmd: 'virtualenv'
     pip_package: 'py-pip'
     pip_cmd: 'pip2.7'
+
 

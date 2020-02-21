@@ -6,7 +6,7 @@
 #
 class python::install {
 
-  $python_name = python::python_name()
+  $python_package = python::python_name()
 
   $python_dev = python::dev_name()
   $dev_ensure = $python::dev ? {
@@ -30,18 +30,18 @@ class python::install {
 
   if $python::use_epel == true {
     include 'epel'
-    Class['epel'] -> Package[$python_name]
+    Class['epel'] -> Package[$python_package]
   }
 
   python::ensure_pip($pip_ensure)
   python::ensure_virtualenv($virtualenv_ensure)
 
-  case $facts['kernel'] {
+  case $facts['os']['family'] {
     'OpenBSD': {
-      package { $python_name: ensure => $::python::version }
+      package { $python_package: ensure => $python::version }
     }
     default: {
-      package { $python_name: ensure => present }
+      package { $python_package: ensure => present }
     }
   }
 }

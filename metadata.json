@@ -1,6 +1,6 @@
 {
   "name": "zleslie-python",
-  "version": "2.4.2",
+  "version": "2.8.0",
   "author": "zleslie",
   "summary": "Python Module",
   "license": "Apache-2.0",
@@ -25,39 +25,38 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "16.04",
-        "15.04"
-      ]
-    },
-    {
-      "operatingsystem": "SLES",
-      "operatingsystemrelease": [
-        "11.3"
+        "18.04",
+        "16.04"
       ]
     },
     {
       "operatingsystem": "FreeBSD",
       "operatingsystemrelease": [
-        "10"
+        "12",
+        "11"
       ]
     },
     {
       "operatingsystem": "OpenBSD",
       "operatingsystemrelease": [
+        "6.1",
         "6.0",
         "5.9",
         "5.8"
       ]
+    },
+    {
+      "operatingsystem": "Archlinux"
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">=4.4.0 < 5.0.0"
+      "version_requirement": ">= 4.8.2 < 5.0.0"
     }
   ],
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.6.0 < 6.0.0"},
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.13.1 < 6.0.0"},
     {"name":"stahnma/epel","version_requirement":">= 1.0.1 < 2.0.0"}
   ],
   "data_provider": "hiera"

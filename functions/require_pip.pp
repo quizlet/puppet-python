@@ -7,6 +7,6 @@
 #
 function python::require_pip() {
   unless $::python::pip {
-    fail("Installing virtualenv on ${::operatingsystem} ${::operatingsystemmajrelease} with ${::python::version} requires that 'python::pip' be set true")
+    fail("Installing virtualenv on ${facts['os']['id']} ${facts['os']['releae']['major']} with ${::python::version} requires that 'python::pip' be set true")
   }
 }

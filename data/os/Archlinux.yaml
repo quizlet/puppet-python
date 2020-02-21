@@ -1,0 +1,15 @@
+---
+python::version: '3'
+python::valid_versions:
+  - '2'
+  - '3'
+
+python::version_data:
+  '3':
+    python_package: 'python'
+    virtualenv_package: 'python-virtualenv'
+    pip_package: 'python-pip'
+  '2':
+    python_package: 'python2'
+    virtualenv_package: 'python2-virtualenv'
+    pip_package: 'python2-pip'

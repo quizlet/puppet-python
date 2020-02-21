@@ -2,7 +2,7 @@
 #
 function python::python_name() {
 
-  case $facts['kernel'] {
+  case $facts['os']['family'] {
     'OpenBSD': {
 
       # Installing Python on OpenBSD is always done with the package
@@ -11,6 +11,12 @@ function python::python_name() {
       $python_name = $::python::version ? {
         'pypy'   => fail('pypi not supported on OpenBSD'),
         default  => 'python',
+      }
+    }
+    'Archlinux': {
+      $python_name = $::python::version ? {
+        /^2.*/  => 'python2',
+        default => 'python',
       }
     }
     default: {

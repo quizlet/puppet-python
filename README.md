@@ -102,8 +102,6 @@ Creates Python virtualenv.
 
 **systempkgs** - Copy system site-packages into virtualenv. Default: don't
 
-**distribute** - Include distribute in the virtualenv. Default: true
-
 **venv_dir** - The location of the virtualenv if resource path not specified. Must be absolute path. Default: resource name
 
 **owner** - Specify the owner of this virtualenv

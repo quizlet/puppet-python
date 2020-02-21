@@ -16,9 +16,6 @@
 # @param venv_dir
 #  Directory to install virtualenv to. Default: $name
 #
-# @param distribute
-#  Include distribute in the virtualenv. Default: true
-#
 # @param index
 #  Base URL of Python package index. Default: none (http://pypi.python.org/simple/)
 #
@@ -30,9 +27,6 @@
 #
 # @param mode
 # Optionally specify directory mode. Default: 0755
-#
-# @param [*proxy*]
-#  Proxy server to use for outbound connections. Default: none
 #
 # @param [*environment*]
 #  Additional environment variables required to install the packages. Default: none
@@ -48,39 +42,36 @@
 #
 # @param [*extra_pip_args*]
 #  Extra arguments to pass to pip after requirements file.  Default: blank
-#
+
 # @example
 #   python::virtualenv { '/var/www/project1':
 #     ensure       => present,
 #     version      => 'system',
 #     requirements => '/var/www/project1/requirements.txt',
-#     proxy        => 'http://proxy.domain.com:3128',
 #     systempkgs   => true,
 #     index        => 'http://www.example.com/simple/'
 #   }
 #
 define python::virtualenv (
   String $ensure         = present,
-  String $version        = 'system',
-  $requirements          = false,
+  String $version        = 'system', # TODO: This doesn't look to work
+  Boolean $requirements  = false,
   Boolean $systempkgs    = false,
   String $venv_dir       = $name,
-  Boolean $distribute    = true,
   Boolean $index         = false,
   String $owner          = 'root',
   String $group          = '0',
   String $mode           = '0755',
-  Boolean $proxy         = false,
   Array $environment     = [],
   Array $path            = [ '/bin', '/usr/bin', '/usr/sbin', '/usr/local/bin' ],
   $cwd                   = undef,
   Integer $timeout       = 1800,
   String $extra_pip_args = '',
-  $virtualenv            = undef
+  $virtualenv            = undef,
 ) {
-  include ::python
+  include python
 
-  unless $::python::virtualenv == true {
+  unless $python::virtualenv {
     fail('to use a virtualenv, you must set $python::virtualenv to true')
   }
 
@@ -91,99 +82,86 @@ define python::virtualenv (
       default  => "python${version}",
     }
 
-    if $virtualenv == undef {
-
-      if $facts['osfamily'] == 'RedHat' {
-        $used_virtualenv = 'virtualenv'
-      } else {
-        $used_virtualenv = $version ? {
-          'system' => 'virtualenv',
-          default  => "virtualenv-${version}",
-        }
-      }
+    if $virtualenv {
+      $virtualenv_cmd = $virtualenv
     } else {
-      $used_virtualenv = $virtualenv
-    }
-
-    $proxy_flag = $proxy ? {
-      false    => '',
-      default  => "--proxy=${proxy}",
-    }
-
-    $proxy_command = $proxy ? {
-      false   => '',
-      default => "&& export http_proxy=${proxy}",
+      $virtualenv_cmd = $python::virtualenv_cmd
     }
 
     # Virtualenv versions prior to 1.7 do not support the
-    # --system-site-packages flag, default off for prior versions
-    # Prior to version 1.7 the default was equal to --system-site-packages
-    # and the flag --no-site-packages had to be passed to do the opposite
-    if $::virtualenv_version {
-      if (( versioncmp($::virtualenv_version,'1.7') > 0 ) and ( $systempkgs == true )) {
-        $system_pkgs_flag = '--system-site-packages'
-      } elsif (( versioncmp($::virtualenv_version,'1.7') < 0 ) and ( $systempkgs == false )) {
-        $system_pkgs_flag = '--no-site-packages'
-      } else {
-        $system_pkgs_flag = $systempkgs ? {
-          true    => '--system-site-packages',
-          false   => '--no-site-packages',
-          default => fail('Invalid value for systempkgs. Boolean value is expected')
-        }
-      }
+    # --system-site-packages flag, default off for prior versions Prior to
+    # version 1.7 the default was equal to --system-site-packages and the flag
+    # --no-site-packages had to be passed to do the opposite
+
+    # TODO: This code doesn't look to work for the non-system case, since the
+    # fact 'virtualenv_version' simply executes 'virtualenv' to determine the
+    # version, so any setting of version in this class would mean this logic
+    # doesn't work.  Likely this will be dropping support for older virtualenv
+    # and just fail if we don't find a version that handles the case we need.
+
+    #if $facts['virtualenv_version'] {
+    #  if (( versioncmp($facts['virtualenv_version'],'1.7') > 0 ) and ( $systempkgs == true )) {
+    #    $system_pkgs_flag = '--system-site-packages'
+    #  } elsif (( versioncmp($facts['virtualenv_version'],'1.7') < 0 ) and ( $systempkgs == false )) {
+    #    $system_pkgs_flag = '--no-site-packages'
+    #  } else {
+    #  }
+    #}
+    $system_pkgs_flag = $systempkgs ? {
+      true    => '--system-site-packages',
+      false   => undef,
     }
 
-    $distribute_pkg = $distribute ? {
-      true     => 'distribute',
-      default  => 'setuptools',
-    }
     $pypi_index = $index ? {
-      false   => '',
+      false   => undef,
       default => "-i ${index}",
     }
-
-    # Python 2.6 and older does not support setuptools/distribute > 0.8 which
-    # is required for pip wheel support, pip therefor requires --no-binary :all: flag
-    # if the # pip version is more recent than 1.4.1 but using an old python or
-    # setuputils/distribute version
-    # To check for this we test for wheel parameter using help and then using
-    # version, this makes sure we only use wheels if they are supported
 
     file { $venv_dir:
       ensure => directory,
       owner  => $owner,
       group  => $group,
-      mode   => $mode
+      mode   => $mode,
     }
 
     $pip_cmd = "${venv_dir}/bin/pip"
 
+    $virtualenv_create_args = [
+      $virtualenv_cmd,
+      $system_pkgs_flag,
+      "-p ${python}",
+      "${venv_dir} &&",
+      "${pip_cmd} wheel --help > /dev/null 2>&1 &&",
+      "{ ${pip_cmd} wheel --version > /dev/null 2>&1 || wheel_support_flag='--no-use-wheel'; };",
+      "{ ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index} \$wheel_support_flag --upgrade pip setuptools || ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index}  --upgrade pip setuptools ;}",
+    ]
+
     exec { "python_virtualenv_${venv_dir}":
-      command     => "true ${proxy_command} && ${used_virtualenv} ${system_pkgs_flag} -p ${python} ${venv_dir} && ${pip_cmd} wheel --help > /dev/null 2>&1 && { ${pip_cmd} show wheel > /dev/null 2>&1 || wheel_support_flag='--no-binary :all:'; } ; { ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index} ${proxy_flag} \$wheel_support_flag --upgrade pip ${distribute_pkg} || ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index} ${proxy_flag}  --upgrade pip ${distribute_pkg} ;}",
+      command     => $virtualenv_create_args.delete_undef_values().join(' '),
       user        => $owner,
       creates     => "${venv_dir}/bin/activate",
       path        => $path,
       cwd         => '/tmp',
       environment => $environment,
-      unless      => "grep '^[\\t ]*VIRTUAL_ENV=[\\\\'\\\"]*${venv_dir}[\\\"\\\\'][\\t ]*$' ${venv_dir}/bin/activate", #Unless activate exists and VIRTUAL_ENV is correct we re-create the virtualenv
+      #Unless activate exists and VIRTUAL_ENV is correct we re-create the virtualenv
+      unless      => "grep '^[\\t ]*VIRTUAL_ENV=[\\\\'\\\"]*${venv_dir}[\\\"\\\\'][\\t ]*$' ${venv_dir}/bin/activate",
       require     => File[$venv_dir],
     }
 
     if $requirements {
       exec { "python_requirements_initial_install_${requirements}_${venv_dir}":
-        command     => "${pip_cmd} wheel --help > /dev/null 2>&1 && { ${pip_cmd} show wheel > /dev/null 2>&1 || wheel_support_flag='--no-binary :all:'; } ; ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index} ${proxy_flag} \$wheel_support_flag -r ${requirements} ${extra_pip_args}",
+        command     => "${pip_cmd} wheel --help > /dev/null 2>&1 && { ${pip_cmd} wheel --version > /dev/null 2>&1 || wheel_support_flag='--no-use-wheel'; } ; ${pip_cmd} --log ${venv_dir}/pip.log install ${pypi_index} \$wheel_support_flag -r ${requirements} ${extra_pip_args}",
         refreshonly => true,
         timeout     => $timeout,
         user        => $owner,
         subscribe   => Exec["python_virtualenv_${venv_dir}"],
         environment => $environment,
-        cwd         => $cwd
+        cwd         => $cwd,
       }
 
       python::requirements { "${requirements}_${venv_dir}":
         requirements   => $requirements,
         virtualenv     => $venv_dir,
-        proxy          => $proxy,
         owner          => $owner,
         group          => $group,
         cwd            => $cwd,

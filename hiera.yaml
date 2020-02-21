@@ -14,6 +14,9 @@ hierarchy:
   - name: "family"
     path: "os/%{facts.os.family}"
     backend: yaml
+  - name: "kernel"
+    path: "kernel/%{facts.kernel}"
+    backend: yaml
   - name: "common"
     backend: yaml
     path: "common"

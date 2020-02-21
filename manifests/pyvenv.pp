@@ -55,7 +55,7 @@ define python::pyvenv (
       ensure => directory,
       owner  => $owner,
       group  => $group,
-      mode   => $mode
+      mode   => $mode,
     }
 
     exec { "python_virtualenv_${venv_dir}":

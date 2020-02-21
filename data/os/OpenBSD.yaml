@@ -1,0 +1,8 @@
+---
+python::version_data:
+  'system':
+    virtualenv_package: 'py-virtualenv'
+    virtualenv_cmd: 'virtualenv'
+    pip_package: 'py-pip'
+    pip_cmd: 'pip'
+
